@@ -222,7 +222,8 @@ static int chan_tryrecv_buf(struct chan *ch, void **data)
         }
 
         if (pos + 1 == ch->cap)
-            new_head = (uint64_t)(XXX) << 32;
+            /* new_head = (uint64_t)(XXX) << 32; */
+            new_head = (uint64_t)(lap+2) << 32;
         else
             new_head = head + 1;
     } while (!atomic_compare_exchange_weak_explicit(&ch->head, &head, new_head,
@@ -281,7 +282,8 @@ static int chan_send_unbuf(struct chan *ch, void *data)
 
         if (atomic_fetch_sub_explicit(&ch->recv_ftx, 1, memory_order_acquire) ==
             CHAN_WAITING)
-            futex_wake(&ch->recv_ftx, YYY);
+            /* futex_wake(&ch->recv_ftx, YYY); */
+            futex_wake(&ch->recv_ftx, 1);
     } else {
         if (atomic_fetch_add_explicit(&ch->send_ftx, 1, memory_order_acquire) ==
             CHAN_NOT_READY) {
