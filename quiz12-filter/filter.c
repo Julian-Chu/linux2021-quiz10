@@ -407,8 +407,8 @@ static int _ev_watcher_stop(ev_t *w)
     w->active = 0;
 
     /* Remove from internal list */
-    YYY;
-
+    /* YYY; */
+    EV_REMOVE(w, w->ctx->watchers);
     /* Remove from kernel */
     if (epoll_ctl(w->ctx->fd, EPOLL_CTL_DEL, w->fd, NULL) < 0) return -1;
 
@@ -417,7 +417,8 @@ static int _ev_watcher_stop(ev_t *w)
 
 static bool _ev_watcher_active(ev_t *w)
 {
-    return w ? (ZZZ) : false;
+    /* return w ? (ZZZ) : false; */
+    return w ? (w->ctx->running) : false;
 }
 
 static int _ev_watcher_rearm(ev_t *w)
@@ -538,7 +539,8 @@ int ev_run(ev_ctx_t *ctx, int flags)
         if (rerun) continue;
         ctx->workaround = false;
 
-        while ((nfds = WWW(ctx->fd, ee, EV_MAX_EVENTS, timeout)) < 0) {
+        /* while ((nfds = WWW(ctx->fd, ee, EV_MAX_EVENTS, timeout)) < 0) { */
+        while ((nfds = epoll_wait(ctx->fd, ee, EV_MAX_EVENTS, timeout)) < 0) {
             if (!ctx->running) break;
 
             if (EINTR == errno) continue; /* Signalled, try again */
@@ -557,7 +559,8 @@ int ev_run(ev_ctx_t *ctx, int flags)
 
             switch (w->type) {
             case EV_IO_TYPE:
-                if (events & (XXX | EPOLLERR)) ev_io_stop(w);
+                /* if (events & (XXX | EPOLLERR)) ev_io_stop(w); */
+                if (events & (EPOLLONESHOT | EPOLLERR)) ev_io_stop(w);
                 break;
 
             case EV_TIMER_TYPE:
