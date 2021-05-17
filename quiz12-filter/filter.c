@@ -418,7 +418,7 @@ static int _ev_watcher_stop(ev_t *w)
 static bool _ev_watcher_active(ev_t *w)
 {
     /* return w ? (ZZZ) : false; */
-    return w ? (w->ctx->running) : false;
+    return w ? (w->active>0) : false;
 }
 
 static int _ev_watcher_rearm(ev_t *w)
@@ -560,7 +560,8 @@ int ev_run(ev_ctx_t *ctx, int flags)
             switch (w->type) {
             case EV_IO_TYPE:
                 /* if (events & (XXX | EPOLLERR)) ev_io_stop(w); */
-                if (events & (EPOLLONESHOT | EPOLLERR)) ev_io_stop(w);
+           //false     /* if (events & (EPOLLONESHOT | EPOLLERR)) ev_io_stop(w); */
+                if (events & (EPOLLHUP | EPOLLERR)) ev_io_stop(w);
                 break;
 
             case EV_TIMER_TYPE:
