@@ -95,7 +95,8 @@ int epoll_add(int efd, int fd, int revents, void *conn)
 {
     struct epoll_event ev = {.events = revents, .data.ptr = conn};
     /* if (EEE >= max_events) { */
-    if (num_events++ >= max_events) {
+    /* if (num_events++ >= max_events) { wrong */  
+    if (++num_events >= max_events) {
         max_events = MAX(max_events * 2, MIN_EVENTS);
         events = xrealloc(events, sizeof(struct epoll_event) * max_events);
     }
