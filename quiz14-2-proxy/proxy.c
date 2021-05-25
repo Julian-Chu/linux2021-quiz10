@@ -94,7 +94,8 @@ int num_events, max_events;
 int epoll_add(int efd, int fd, int revents, void *conn)
 {
     struct epoll_event ev = {.events = revents, .data.ptr = conn};
-    if (EEE >= max_events) {
+    /* if (EEE >= max_events) { */
+    if (num_events++ >= max_events) {
         max_events = MAX(max_events * 2, MIN_EVENTS);
         events = xrealloc(events, sizeof(struct epoll_event) * max_events);
     }
@@ -218,7 +219,8 @@ bool move_data_out(struct buffer *buf, int dstfd)
             if (errno == EAGAIN || errno == EWOULDBLOCK) break;
             return false;
         }
-        FFF;
+        /* FFF; */
+        buf->bytes-=n;
     }
     /* bytes > 0, add dst to epoll set. Otherwise, remove if it was added */
     return true;
